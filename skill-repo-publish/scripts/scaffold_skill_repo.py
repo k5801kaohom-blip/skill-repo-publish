@@ -34,8 +34,10 @@ PLAN = {
     "gitignore": ".gitignore",
     "README.md": "README.md",
     "verify_skill_repo.sh": "verify_skill_repo.sh",
-    "verify.yml": ".github/workflows/verify.yml",
+    "ci.yml": ".github/workflows/ci.yml",
+    "release.yml": ".github/workflows/release.yml",
     "check_skill_contract.py": "scripts/check_skill_contract.py",
+    "ci_negative_control.py": "scripts/ci_negative_control.py",
     "ci_summary.py": "scripts/ci_summary.py",
 }
 

@@ -92,11 +92,14 @@ is not evidence, and one that failed in zero seconds never executed a check.
 - `scripts/scaffold_skill_repo.py` — scaffold the repository; refuses to overwrite existing files unless `--force`.
 - `references/repo-anatomy.md` — why the layout is this shape, what belongs at the root versus the payload, and how to adapt for root-level or multi-skill repositories.
 - `references/publish-workflow.md` — full publish sequence, independent clone test, and failure-mode table.
+- `references/ci-cd-design.md` — what each CI job proves, why releases re-verify instead of trusting CI, and the YAML pitfalls that make a workflow fail in zero seconds.
 - `templates/install.sh` — installer; auto-detects the skill, verifies the install.
 - `templates/package.sh` — ZIP packager; proves the archive contains SKILL.md.
 - `templates/verify_skill_repo.sh` — seven-stage repository verifier with `--offline`, `--skip-clone`, `--api`, `--json`.
-- `templates/verify.yml` — GitHub Actions workflow.
+- `templates/ci.yml` — CI workflow: repository integrity, contract check with negative control, payload self-test, and an aggregate summary job.
+- `templates/release.yml` — tag-triggered release workflow; re-verifies the tagged tree before attaching an archive.
 - `templates/check_skill_contract.py` — checks that every resource SKILL.md names actually exists, compiles, and is executable. Scaffolded into the repository so each one can verify its own contract.
+- `templates/ci_negative_control.py` — proves the contract checker can actually fail, by running it against deliberately broken copies.
 - `templates/ci_summary.py` — render a verify report as a job summary.
 - `templates/README.md` — repository README with install, verify, and layout sections.
 - `templates/gitignore` — ignores build output, install backups, and verification artifacts.
