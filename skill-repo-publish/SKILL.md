@@ -109,10 +109,34 @@ catch and expensive to diagnose remotely:
 Do not report a repository as published until CI shows success. A workflow that has never run
 is not evidence, and one that failed in zero seconds never executed a check.
 
+## Keeping a fleet of repositories current
+
+Once more than one repository uses the mechanism, two things drift apart and neither is
+visible from inside a single repository: a repository converted earlier falls behind the
+templates, and a repository still holds a superseded workflow whose unique assertions were
+never carried over.
+
+```bash
+python3 scripts/audit_fleet.py --root /home/ubuntu/repos --templates <templates> --json fleet.json
+```
+
+Read-only. Run it before a rollout to see what is already adopted, and afterwards to catch
+repositories that fell behind.
+
+**A repository's workflow may carry extra jobs on purpose.** When a superseded workflow held
+assertions `ci.yml` does not, the correct fix is to carry them over as a job, so the
+repository ends up ahead of the template rather than behind it. The auditor therefore compares
+**job coverage** for workflows, not bytes: a missing template job is drift, an extra job is a
+customisation. Byte comparison would report the deliberate job as drift and invite someone to
+overwrite it — which is how a repository loses its only negative control. Extra jobs are
+printed under a DO NOT OVERWRITE heading, because re-scaffolding with `--force` would delete
+them.
+
 ## Bundled Resources
 
 - `scripts/scaffold_skill_repo.py` — scaffold the repository; refuses to overwrite existing files unless `--force`.
 - `scripts/apply_ci_to_repo.py` — add or update the CI mechanism in an existing repository; dry-run first, and it names any assertion the superseded workflow had that `ci.yml` does not.
+- `scripts/audit_fleet.py` — audit many repositories at once for adoption state and template drift; read-only, and it distinguishes a deliberate customisation from drift so nobody overwrites one by mistake.
 - `references/repo-anatomy.md` — why the layout is this shape, what belongs at the root versus the payload, and how to adapt for root-level or multi-skill repositories.
 - `references/publish-workflow.md` — full publish sequence, independent clone test, and failure-mode table.
 - `references/ci-cd-design.md` — what each CI job proves, why releases re-verify instead of trusting CI, and the YAML pitfalls that make a workflow fail in zero seconds.
@@ -125,7 +149,7 @@ is not evidence, and one that failed in zero seconds never executed a check.
 - `templates/check_skill_contract.py` — checks that every resource SKILL.md names actually exists, compiles, and is executable. Scaffolded into the repository so each one can verify its own contract.
 - `templates/ci_negative_control.py` — proves the contract checker can actually fail, by running it against deliberately broken copies.
 - `templates/ci_import_check.py` — imports every shipped script for real, separating a missing dependency from a broken script.
-- `templates/ci_summary.py` — render a verify report as a job summary.
+- `templates/ci_summary.py` — render verify, contract, negative-control, and import reports as a job summary; treats a missing report as a failure rather than as a pass.
 - `templates/README.md` — repository README with install, verify, and layout sections.
 - `templates/gitignore` — ignores build output, install backups, and verification artifacts.
 
