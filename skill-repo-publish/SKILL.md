@@ -96,6 +96,7 @@ is not evidence, and one that failed in zero seconds never executed a check.
 - `templates/package.sh` — ZIP packager; proves the archive contains SKILL.md.
 - `templates/verify_skill_repo.sh` — seven-stage repository verifier with `--offline`, `--skip-clone`, `--api`, `--json`.
 - `templates/verify.yml` — GitHub Actions workflow.
+- `templates/check_skill_contract.py` — checks that every resource SKILL.md names actually exists, compiles, and is executable. Scaffolded into the repository so each one can verify its own contract.
 - `templates/ci_summary.py` — render a verify report as a job summary.
 - `templates/README.md` — repository README with install, verify, and layout sections.
 - `templates/gitignore` — ignores build output, install backups, and verification artifacts.

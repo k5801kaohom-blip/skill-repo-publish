@@ -35,6 +35,7 @@ PLAN = {
     "README.md": "README.md",
     "verify_skill_repo.sh": "verify_skill_repo.sh",
     "verify.yml": ".github/workflows/verify.yml",
+    "check_skill_contract.py": "scripts/check_skill_contract.py",
     "ci_summary.py": "scripts/ci_summary.py",
 }
 
