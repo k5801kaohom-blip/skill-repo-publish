@@ -35,7 +35,9 @@ discard them.
 ```bash
 cd /home/ubuntu/repos/<repo-name>
 bash -n install.sh && bash -n package.sh && bash -n verify_skill_repo.sh
-python3 -c "import yaml,sys; yaml.safe_load(open('.github/workflows/verify.yml')); print('yaml ok')"
+for wf in .github/workflows/*.yml; do
+  python3 -c "import yaml,sys; yaml.safe_load(open('$wf')); print('yaml ok: $wf')"
+done
 python3 scripts/ci_summary.py --help >/dev/null 2>&1 || true
 
 # Prove the installer works before it is published.

@@ -12,8 +12,13 @@ repo-name/
 │   ├── scripts/
 │   ├── references/
 │   └── templates/
-├── .github/workflows/verify.yml
-├── scripts/ci_summary.py     # CI helpers, not skill payload
+├── .github/workflows/
+│   ├── ci.yml
+│   └── release.yml
+├── scripts/                  # CI helpers, not skill payload
+│   ├── check_skill_contract.py
+│   ├── ci_negative_control.py
+│   └── ci_summary.py
 ├── install.sh
 ├── package.sh
 ├── verify_skill_repo.sh
@@ -88,7 +93,7 @@ explicitly instead.
 once; at that point the single-skill assumption in the template has been outgrown and the
 script should be adapted, not forced.
 
-**No CI need.** If the repository is private and internal, `verify.yml` can be dropped. Keep
+**No CI need.** If the repository is private and internal, `ci.yml` can be dropped. Keep
 `verify_skill_repo.sh`: running it locally before a push still catches the uncommitted-file
 failure, just later than CI would.
 
