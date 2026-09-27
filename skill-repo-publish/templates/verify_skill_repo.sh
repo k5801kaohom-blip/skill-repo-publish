@@ -120,10 +120,17 @@ fi
 # ------------------------------------------------- 2. documented-resource contract
 echo
 echo "######## 2. skill contract ########"
+# The checker may live in the skill payload (a skill that ships it as one of its own
+# scripts) or at the repository root (repository tooling). Accept either.
+CONTRACT=""
+for cand in "$SKILL_DIR/scripts/check_skill_contract.py" "$ROOT/scripts/check_skill_contract.py"; do
+  [ -f "$cand" ] && CONTRACT="$cand" && break
+done
+
 if [ ! -f "$SKILL_DIR/SKILL.md" ]; then
   record FAIL "skill contract" "no $SKILL_NAME/SKILL.md"
-elif [ -f "$SKILL_DIR/scripts/check_skill_contract.py" ]; then
-  OUT="$(python3 "$SKILL_DIR/scripts/check_skill_contract.py" --skill "$SKILL_DIR" 2>&1)"
+elif [ -n "$CONTRACT" ]; then
+  OUT="$(python3 "$CONTRACT" --skill "$SKILL_DIR" 2>&1)"
   if [ $? -eq 0 ]; then
     record PASS "skill contract" "$(printf '%s\n' "$OUT" | grep -c '^  \[') documented resources"
   else
@@ -291,6 +298,13 @@ else
         case "$C" in
           *CONTRACT_OK*) record PASS "installed skill contract" "CONTRACT_OK" ;;
           *)             record FAIL "installed skill contract" "$C" ;;
+        esac
+      elif [ -f "$WORKDIR/clone/scripts/check_skill_contract.py" ]; then
+        C="$(python3 "$WORKDIR/clone/scripts/check_skill_contract.py" \
+               --skill "$WORKDIR/clone/$SKILL_NAME" 2>&1 | tail -1)"
+        case "$C" in
+          *CONTRACT_OK*) record PASS "clone contract check" "CONTRACT_OK (portable)" ;;
+          *)             record FAIL "clone contract check" "$C" ;;
         esac
       fi
     else
