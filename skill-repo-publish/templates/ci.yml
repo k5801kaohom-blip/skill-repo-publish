@@ -161,6 +161,19 @@ jobs:
         with:
           python-version: ${{ env.PYTHON_VERSION }}
 
+      # A skill that needs third-party packages declares them in requirements.txt, so CI
+      # can install them before checking that the scripts import. Without this, a missing
+      # dependency would surface as a broken script rather than an incomplete environment.
+      - name: Install declared dependencies
+        run: |
+          set -euo pipefail
+          if [ -f requirements.txt ]; then
+            python3 -m pip install --quiet --requirement requirements.txt
+            echo "installed from requirements.txt"
+          else
+            echo "no requirements.txt; relying on the standard library"
+          fi
+
       # Runs exactly what a consumer runs immediately after installing, so a regression in
       # the skill's own tooling fails on its own signal instead of hiding behind the
       # aggregate verification job.
@@ -185,17 +198,25 @@ jobs:
             echo "no contract checker inside the payload; structure check only"
           fi
 
-      - name: Every shipped script runs
+      - name: Every shipped script imports
         run: |
           set -euo pipefail
           SKILL_DIR="$(find "$SKILLS_DIR" -mindepth 1 -maxdepth 1 -type d | head -1)"
-          # A script that cannot even print its usage is broken for every consumer.
-          find "$SKILL_DIR/scripts" -name '*.py' 2>/dev/null | while read -r f; do
-            echo "--- $f"
-            python3 "$f" --help >/dev/null 2>&1 \
-              || echo "  (no --help; checked for import safety only)"
-          done
-          echo "all shipped scripts imported without error"
+          # A real file, not an inline heredoc: a heredoc inside `run: |` ends the block
+          # scalar early and produces a YAML error far from its cause, and it cannot be
+          # tested locally. See references/ci-cd-design.md.
+          python3 scripts/ci_import_check.py \
+            --skill-dir "$SKILL_DIR" \
+            --json import-report.json
+
+      - name: Upload import report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: import-report
+          path: import-report.json
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: Packaging produces a valid archive
         if: hashFiles('package.sh') != ''

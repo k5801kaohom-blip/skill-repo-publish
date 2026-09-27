@@ -38,10 +38,15 @@ PLAN = {
     "release.yml": ".github/workflows/release.yml",
     "check_skill_contract.py": "scripts/check_skill_contract.py",
     "ci_negative_control.py": "scripts/ci_negative_control.py",
+    "ci_import_check.py": "scripts/ci_import_check.py",
     "ci_summary.py": "scripts/ci_summary.py",
 }
 
-EXECUTABLE = {"install.sh", "package.sh", "verify_skill_repo.sh"}
+EXECUTABLE = {
+    "install.sh", "package.sh", "verify_skill_repo.sh",
+    "check_skill_contract.py", "ci_negative_control.py",
+    "ci_import_check.py", "ci_summary.py",
+}
 
 
 def read_frontmatter(skill_md: Path) -> dict:

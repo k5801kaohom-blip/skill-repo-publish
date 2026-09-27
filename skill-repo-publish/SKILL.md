@@ -73,6 +73,28 @@ SKILL_NAME="$(basename "$(dirname "$SKILL_MD")")"
 A template that needs its name edited in five places will eventually ship with a stale name in
 one of them. Auto-detection is why scaffolding needs no edits afterwards.
 
+## Adopting the mechanism in an existing repository
+
+A repository that already exists has content worth keeping: its README describes its own
+skill, and its workflow may assert things specific to that skill. Overwriting wholesale
+destroys that.
+
+```bash
+# Always dry-run first.
+python3 scripts/apply_ci_to_repo.py \
+  --repo /path/to/repo \
+  --templates /home/ubuntu/skills/skill-repo-publish/templates \
+  --dry-run
+```
+
+The script refuses to run on a dirty tree, reports every file it would add, update, or
+remove, and **lists assertions that exist only in the workflow it is about to remove.** Those
+must be carried into `ci.yml` deliberately — silently dropping a repository's own negative
+control is exactly the failure this mechanism exists to prevent.
+
+Before pushing, confirm on the remote that the new jobs actually ran. A workflow file that was
+never executed is not evidence of anything.
+
 ## Verify before you publish
 
 Run the local checks in step 2 rather than learning from a CI log. Two failures are cheap to
@@ -90,9 +112,11 @@ is not evidence, and one that failed in zero seconds never executed a check.
 ## Bundled Resources
 
 - `scripts/scaffold_skill_repo.py` — scaffold the repository; refuses to overwrite existing files unless `--force`.
+- `scripts/apply_ci_to_repo.py` — add or update the CI mechanism in an existing repository; dry-run first, and it names any assertion the superseded workflow had that `ci.yml` does not.
 - `references/repo-anatomy.md` — why the layout is this shape, what belongs at the root versus the payload, and how to adapt for root-level or multi-skill repositories.
 - `references/publish-workflow.md` — full publish sequence, independent clone test, and failure-mode table.
 - `references/ci-cd-design.md` — what each CI job proves, why releases re-verify instead of trusting CI, and the YAML pitfalls that make a workflow fail in zero seconds.
+- `references/team-rollout.md` — staged plan for rolling the mechanism out across an organisation, including the per-repository checklist and how to migrate without losing existing assertions.
 - `templates/install.sh` — installer; auto-detects the skill, verifies the install.
 - `templates/package.sh` — ZIP packager; proves the archive contains SKILL.md.
 - `templates/verify_skill_repo.sh` — seven-stage repository verifier with `--offline`, `--skip-clone`, `--api`, `--json`.
@@ -100,6 +124,7 @@ is not evidence, and one that failed in zero seconds never executed a check.
 - `templates/release.yml` — tag-triggered release workflow; re-verifies the tagged tree before attaching an archive.
 - `templates/check_skill_contract.py` — checks that every resource SKILL.md names actually exists, compiles, and is executable. Scaffolded into the repository so each one can verify its own contract.
 - `templates/ci_negative_control.py` — proves the contract checker can actually fail, by running it against deliberately broken copies.
+- `templates/ci_import_check.py` — imports every shipped script for real, separating a missing dependency from a broken script.
 - `templates/ci_summary.py` — render a verify report as a job summary.
 - `templates/README.md` — repository README with install, verify, and layout sections.
 - `templates/gitignore` — ignores build output, install backups, and verification artifacts.
