@@ -1,6 +1,10 @@
 ---
 name: skill-repo-publish
-description: Turn a local skill directory into a distributable GitHub repository that others can clone, install, and verify — the installer, packager, verifier, LICENSE, README, and CI workflow around a skill. Use when a skill must be shared with a team, published for git clone installation, packaged as a downloadable archive, given CI that proves a fresh clone works, or when existing skill repositories need the surrounding furniture added or standardised so they stop drifting apart.
+description: 觸發詞：發布技能、技能上架、分享技能、技能給團隊、GitHub 倉庫、建立技能倉庫、打包技能、技能安裝包、技能分享給同事。Turn a local skill directory into a distributable GitHub repository that others can clone, install, and verify — the installer, packager, verifier, LICENSE, README, and CI workflow around a skill. Use when a skill must be shared with a team, published for git clone installation, packaged as a downloadable archive, given CI that proves a fresh clone works, or when existing skill repositories need the surrounding furniture added or standardised so they stop drifting apart.
+metadata:
+  alias_zh-TW: 技能發布上架
+  short_alias_zh-TW: 技能發布
+  keywords_zh-TW: 技能發布、技能發布上架、發布技能、技能上架、分享技能、技能給團隊、GitHub 倉庫、建立技能倉庫、打包技能、技能安裝包、技能分享給同事
 ---
 
 # Skill Repo Publish
